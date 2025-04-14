@@ -1,4 +1,40 @@
-import { ErrorResponse, MessageType, TResponse } from "../types/types";
+import { snackbarContainer } from "../main";
+import { ErrorResponse, MessageType, SnackbarType, TResponse } from "../types/types";
+
+export function createElement<T extends keyof HTMLElementTagNameMap>({
+  tagName,
+  classNames,
+  textContent,
+  innerHTML,
+  attributes,
+}: {
+  tagName: T;
+  classNames?: string[];
+  textContent?: string;
+  innerHTML?: string;
+  attributes?: Record<string, string>;
+}): HTMLElementTagNameMap[T] {
+  const element = document.createElement(tagName);
+
+  if (classNames) {
+    element.classList.add(...classNames);
+  }
+
+  if (textContent) {
+    element.textContent = textContent;
+  }
+
+  if (innerHTML) {
+    element.innerHTML = innerHTML;
+  }
+
+  if (attributes) {
+    for (const [key, value] of Object.entries(attributes)) {
+      element.setAttribute(key, value);
+    }
+  }
+  return element;
+}
 
 export function createInput(id: string, type: string, className: string[], placeholder: string) {
   const input = document.createElement("input");
@@ -27,24 +63,6 @@ export function createSubmitButton(text: string) {
   return button;
 }
 
-export function createText(className: string[], text: string) {
-  const textP = document.createElement("div");
-  textP.classList.add(...className);
-  textP.textContent = text;
-  return textP;
-}
-
-export function createLink(link: string, className: string[], text?: string) {
-  const linkA = document.createElement("a");
-  linkA.href = link;
-  linkA.target = "_blank";
-  linkA.classList.add(...className);
-  if (text) {
-    linkA.textContent = text;
-  }
-  return linkA;
-}
-
 export function createDiv(className: string[], data?: { key: string; value: string }) {
   const div = document.createElement("div");
   div.classList.add(...className);
@@ -54,62 +72,22 @@ export function createDiv(className: string[], data?: { key: string; value: stri
   return div;
 }
 
-export function createSpan(className: string[], text: string) {
-  const span = document.createElement("span");
-  span.classList.add(...className);
-  span.textContent = text;
-  return span;
-}
-
-export function createElement(element_: string, className: string[], text?: string) {
-  const element = document.createElement(element_);
-  element.classList.add(...className);
-  if (text) {
-    element.textContent = text;
-  }
-  return element;
-}
-
-export function createImage(className: string[], source: string, alt: string) {
-  const image = document.createElement("img");
-  image.classList.add(...className);
-  image.src = source;
-  image.alt = alt;
-  image.title = alt;
-  return image;
-}
-
-export function createSnackbar(text: string) {
-  let opacity = 1;
-  const snackbar = document.createElement("div");
-  const vertical = "top";
-  const horizontal = "right";
-  const open = true;
-
-  const fadeOutInterval = setInterval(() => {
-    opacity -= 0.1;
-    snackbar.style.opacity = opacity.toString();
-    if (opacity <= 0) {
-      clearInterval(fadeOutInterval);
-      snackbar.remove();
-    }
-  }, 300);
-
-  if (open) {
-    snackbar.style.position = "fixed";
-    snackbar.style.top = vertical === "top" ? "20px" : "auto";
-    snackbar.style.right = horizontal === "right" ? "20px" : "auto";
-  }
-
-  snackbar.classList.add("snackbar");
-  snackbar.textContent = text;
-  return snackbar;
+export function createSnackbar(type: SnackbarType, text: string) {
+  const snackbar = createElement({
+    tagName: "div",
+    classNames: ["snackbar", `snackbar_${type}`],
+    textContent: text,
+  });
+  snackbarContainer.prepend(snackbar);
+  setTimeout(() => {
+    snackbar.remove();
+  }, 3500);
 }
 
 export function showError(payload: TResponse) {
   if (payload.type === MessageType.ERROR) {
     const errorData = (payload as ErrorResponse).payload.error;
-    const snackbar = createSnackbar(errorData);
-    document.body.append(snackbar);
+    const snackbar = createSnackbar(SnackbarType.error, errorData);
+    return snackbar;
   }
 }

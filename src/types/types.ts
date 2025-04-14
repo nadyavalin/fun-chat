@@ -31,7 +31,7 @@ export interface UserRequest {
 
 export interface UserResponse {
   login: string;
-  isLogined: boolean;
+  isLogged: boolean;
 }
 
 export interface UserLoginPayloadRequest {
@@ -113,7 +113,7 @@ export interface MessageReadRequest {
 export interface MessageReadStatusPayloadResponse {
   id: string;
   status: {
-    isReaded: boolean;
+    isRead: boolean;
   };
 }
 
@@ -242,3 +242,8 @@ export type TResponse =
   | MessageDeletedResponse
   | MessageEditResponse
   | ErrorResponse;
+
+export enum SnackbarType {
+  error = "error",
+  success = "success",
+}

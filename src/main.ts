@@ -7,9 +7,15 @@ import { state } from "./store/state";
 import { infoButton, formArea } from "./pages/form/loginForm";
 import { backButton, infoArea } from "./pages/info/info";
 import { footer, header, main } from "./pages/chat/chat";
+import { createElement } from "./utils/elements";
 
 document.body.append(formArea);
 document.body.classList.add("body-chat");
+
+export const snackbarContainer = createElement({
+  tagName: "div",
+  classNames: ["snackbar-container"],
+});
 
 infoButton.addEventListener("click", () => {
   formArea.classList.add("form_hide");

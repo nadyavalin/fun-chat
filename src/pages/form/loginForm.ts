@@ -1,18 +1,11 @@
 import { main, footer, header, logoutButton, userName, membersList } from "../chat/chat";
 import { login, logout, activeUser, inactiveUser } from "../../api/api";
 import { state } from "../../store/state";
-import {
-  createButton,
-  createDiv,
-  createElement,
-  createInput,
-  createSnackbar,
-  createSubmitButton,
-  createText,
-} from "../../utils/elements";
+import { createElement, createButton, createInput, createSnackbar, createSubmitButton } from "../../utils/elements";
 import {
   ActivePayloadResponse,
   InactivePayloadResponse,
+  SnackbarType,
   UserExternalPayloadResponse,
   UserLoginPayloadResponse,
 } from "../../types/types";
@@ -20,16 +13,21 @@ import {
 const loginPattern = /[-a-z]{2,}$/;
 const passwordPattern = /[-a-z0-9]{3,}$/;
 
-export const formArea = createDiv(["form-area"]);
+export const formArea = createElement({ tagName: "div", classNames: ["form-area"] });
 
 const form = document.createElement("form");
 const inputLogin = createInput("login", "text", ["input"], "Login");
-const errorMessageForFirstName = createText(["error-message"], "❌ Your login must be more than 3 characters.");
+const errorMessageForFirstName = createElement({
+  tagName: "p",
+  classNames: ["error-message"],
+  textContent: "❌ Your login must be more than 3 characters.",
+});
 const inputPassword = createInput("password", "password", ["input"], "Password");
-const errorMessageForSurname = createText(
-  ["error-message"],
-  "❌ Your password must be more than 4 characters or/and numbers."
-);
+const errorMessageForSurname = createElement({
+  tagName: "p",
+  classNames: ["error-message"],
+  textContent: "❌ Your password must be more than 4 characters or/and numbers.",
+});
 export const loginButton = createSubmitButton("enter chat");
 export const infoButton = createButton("info", ["button", "form-info-button"], "info");
 form.append(inputLogin, errorMessageForFirstName, inputPassword, errorMessageForSurname, loginButton);
@@ -72,10 +70,10 @@ export function updateMembersList() {
       continue;
     }
 
-    const userItem = createElement("li", ["user-item"]);
+    const userItem = createElement({ tagName: "li", classNames: ["user-item"] });
     userItem.textContent = user.login;
     userItem.dataset.login = user.login;
-    if (user.isLogined) {
+    if (user.isLogged) {
       userItem.classList.add("user-item_online");
     }
     membersList.append(userItem);
@@ -83,8 +81,7 @@ export function updateMembersList() {
 }
 
 export function userLogin(payload: UserLoginPayloadResponse) {
-  const snackbarUserLogin = createSnackbar("Пользователь успешно авторизован");
-  document.body.append(snackbarUserLogin);
+  const snackbarUserLogin = createSnackbar(SnackbarType.success, "Пользователь успешно авторизован");
   state.login = payload.user.login;
   userName.textContent = `User: ${state.login}`;
   state.authorizedUsers.push(payload.user);
@@ -94,6 +91,7 @@ export function userLogin(payload: UserLoginPayloadResponse) {
     formArea.classList.add("form_hide");
     document.body.append(header, main, footer);
   }
+  return snackbarUserLogin;
 }
 
 export function userLogout() {
@@ -103,13 +101,15 @@ export function userLogout() {
   userName.textContent = "";
   state.authorizedUsers = [];
   state.unauthorizedUsers = [];
-  const snackbarUserLogout = createSnackbar("Пользователь успешно вышел из чата");
-  document.body.append(snackbarUserLogout);
+  const snackbarUserLogout = createSnackbar(SnackbarType.success, "Пользователь успешно вышел из чата");
+
   form.classList.remove("form_hide");
   header.remove();
   main.remove();
   footer.remove();
   updateMembersList();
+
+  return snackbarUserLogout;
 }
 
 export function externalUserLogin(payload: UserExternalPayloadResponse) {
