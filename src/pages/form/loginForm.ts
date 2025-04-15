@@ -1,7 +1,7 @@
 import { main, footer, header, logoutButton, userName, membersList } from "../chat/chat";
 import { login, logout, activeUser, inactiveUser } from "../../api/api";
 import { state } from "../../store/state";
-import { createElement, createButton, createInput, createSnackbar, createSubmitButton } from "../../utils/elements";
+import { createElement, createSnackbar } from "../../utils/elements";
 import {
   ActivePayloadResponse,
   InactivePayloadResponse,
@@ -16,20 +16,37 @@ const passwordPattern = /[-a-z0-9]{3,}$/;
 export const formArea = createElement({ tagName: "div", classNames: ["form-area"] });
 
 const form = document.createElement("form");
-const inputLogin = createInput("login", "text", ["input"], "Login");
+const inputLogin = createElement({
+  tagName: "input",
+  classNames: ["input"],
+  attributes: { type: "text", id: "login", placeholder: "Login", required: true },
+});
 const errorMessageForFirstName = createElement({
   tagName: "p",
   classNames: ["error-message"],
   textContent: "❌ Your login must be more than 3 characters.",
 });
-const inputPassword = createInput("password", "password", ["input"], "Password");
+const inputPassword = createElement({
+  tagName: "input",
+  classNames: ["input"],
+  attributes: { type: "password", id: "password", placeholder: "Password" },
+});
 const errorMessageForSurname = createElement({
   tagName: "p",
   classNames: ["error-message"],
   textContent: "❌ Your password must be more than 4 characters or/and numbers.",
 });
-export const loginButton = createSubmitButton("enter chat");
-export const infoButton = createButton("info", ["button", "form-info-button"], "info");
+export const loginButton = createElement({
+  tagName: "button",
+  textContent: "enter chat",
+  attributes: { type: "submit", disabled: true },
+});
+export const infoButton = createElement({
+  tagName: "button",
+  classNames: ["button", "form-info-button"],
+  textContent: "info",
+  attributes: { id: "info" },
+});
 form.append(inputLogin, errorMessageForFirstName, inputPassword, errorMessageForSurname, loginButton);
 formArea.append(form, infoButton);
 

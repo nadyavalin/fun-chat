@@ -15,7 +15,7 @@ import {
 } from "../../api/api";
 import state from "../../store/state";
 import { infoArea } from "../info/info";
-import { createElement, createDiv } from "../../utils/elements";
+import { createElement } from "../../utils/elements";
 
 export const header = createElement({ tagName: "header", classNames: ["header"] });
 export const main = createElement({ tagName: "main", classNames: ["main"] });
@@ -167,7 +167,11 @@ export function editMessage(message: MessageEditRequest) {
 export function receiveMessage(payload: SendMessagePayloadResponse) {
   if (payload.message.from === state.selectedUser?.login || payload.message.to === state.selectedUser?.login) {
     chatArea.classList.add("right-side__chat-area_talk");
-    const messageArea = createDiv(["message-area"], { key: "id", value: payload.message.id });
+    const messageArea = createElement({
+      tagName: "div",
+      classNames: ["message-area"],
+      attributes: { key: "id", value: payload.message.id },
+    });
     const messageTopArea = createElement({ tagName: "div", classNames: ["message-top-area"] });
     const messageBottomArea = createElement({ tagName: "div", classNames: ["message-bottom-area"] });
     const messageFrom = createElement({
