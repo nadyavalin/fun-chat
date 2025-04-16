@@ -5,7 +5,6 @@ import { createElement, createSnackbar } from "../../utils/elements";
 import {
   ActivePayloadResponse,
   InactivePayloadResponse,
-  MessageType,
   SnackbarType,
   UserExternalPayloadResponse,
   UserLoginPayloadResponse,
@@ -17,7 +16,7 @@ const passwordPattern = /[-a-z0-9]{3,}$/;
 
 export const formArea = createElement({ tagName: "div", classNames: ["form-area"] });
 
-const form = document.createElement("form");
+export const form = document.createElement("form");
 const inputLogin = createElement({
   tagName: "input",
   classNames: ["input"],
@@ -133,6 +132,7 @@ export function userLogout() {
   userName.textContent = "";
   state.authorizedUsers = [];
   state.unauthorizedUsers = [];
+
   const snackbarUserLogout = createSnackbar(SnackbarType.success, "Пользователь успешно вышел из чата");
 
   form.classList.remove("form_hide");
@@ -152,7 +152,7 @@ export function externalUserLogin(payload: UserExternalPayloadResponse) {
 
 export function externalUserLogout(payload: UserExternalPayloadResponse) {
   state.unauthorizedUsers.push(payload.user);
-  state.unauthorizedUsers = state.unauthorizedUsers.filter((u) => u.login !== payload.user.login);
+  state.authorizedUsers = state.authorizedUsers.filter((u) => u.login !== payload.user.login);
   updateMembersList();
 }
 
@@ -161,13 +161,7 @@ form.addEventListener("submit", (event) => {
   state.login = inputLogin.value;
   state.password = inputPassword.value;
 
-  // activeUser("");
-  // inactiveUser("");
   login("", { user: { login: state.login, password: state.password } });
-  console.log("Sending USER_LOGIN request:", {
-    type: MessageType.USER_LOGIN,
-    payload: { user: { login: state.login, password: state.password } },
-  });
 });
 
 logoutButton.addEventListener("click", () => {
@@ -200,5 +194,3 @@ const onFocus = (event: Event) => {
 inputLogin.addEventListener("focus", onFocus);
 
 inputPassword.addEventListener("focus", onFocus);
-
-export default form;
