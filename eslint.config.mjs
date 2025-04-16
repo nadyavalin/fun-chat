@@ -19,9 +19,12 @@ export default tseslint.config(
     },
     rules: {
       "no-unused-expressions": "error",
+      "unicorn/no-null": "off",
+      "unicorn/no-array-for-each": "off",
+      "unicorn/prefer-dom-node-dataset": "off",
+
       "unicorn/better-regex": "off",
       "unicorn/consistent-function-scoping": "off",
-      "unicorn/empty-brace-spaces": "off",
       "unicorn/expiring-todo-comments": "off",
       "unicorn/filename-case": "off",
       "unicorn/import-style": "off",

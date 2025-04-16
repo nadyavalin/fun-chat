@@ -128,7 +128,7 @@ membersList.addEventListener("click", (event: Event) => {
     if (login) {
       const isLogged = eventTarget.classList.contains("user-item_online");
       const status = isLogged ? "online" : "offline";
-      state.selectedUser = { login, isLogged: isLogged };
+      state.selectedUser = { login, isLogined: isLogged };
       const chosenUserFromList = createElement({ tagName: "p", classNames: ["chosen-user"], textContent: login });
       const userStatus = createElement({ tagName: "p", classNames: ["user-status"], textContent: status });
       statusArea.append(chosenUserFromList, userStatus);

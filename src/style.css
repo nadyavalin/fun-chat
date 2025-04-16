@@ -4,9 +4,25 @@
   box-sizing: border-box;
 }
 
+:root {
+  --text-color: #414141;
+  --background-gradient: linear-gradient(90deg, #cfecd0, #a0cea7, #9ec0db);
+  --link-hover-color: #0084ff;
+  --button-color: #a0cea7;
+  --button-hover-color: #39ff56;
+  --button-disabled-color: #c0f0c2;
+  --button-disabled-text-color: #adadad;
+  --button-shadow-color: rgb(160, 206, 167, 0.5);
+  --snackbar-background-color: #d1d1d1;
+  --snackbar-shadow-color: #a1a1a1;
+  --error-color: #a70000;
+  --success-color: #28a745;
+  --notifications-layer: 1;
+}
+
 body {
-  color: #282828;
-  background: linear-gradient(90deg, #cfecd0, #a0cea7, #9ec0db);
+  color: var(--text-color);
+  background: var(--background-gradient);
   font-family: Arial, Helvetica, sans-serif;
   min-height: calc(100vh - 40px);
   margin: 10px;
@@ -21,7 +37,6 @@ body {
 }
 
 a {
-  color: #ffffff;
   text-decoration: none;
   cursor: pointer;
   color: inherit;
@@ -34,34 +49,70 @@ button {
   width: 100%;
   height: 35px;
   border: none;
-  background-color: #a0cea7;
-  box-shadow: 4px 4px 4px rgb(160, 206, 167, 0.5);
-  color: #414141;
+  background-color: var(--button-color);
+  box-shadow: 4px 4px 4px var(--button-shadow-color);
+  color: var(--text-color);
   text-transform: uppercase;
   cursor: pointer;
   transition: background-color 0.5s ease-in-out;
 }
 
 button.disabled {
-  background-color: #c0f0c2;
-  color: #adadad;
+  background-color: var(--button-disabled-color);
+  color: var(--button-disabled-text-color);
   cursor: not-allowed;
   pointer-events: none;
 }
 
+.snackbar-container {
+  max-width: 30%;
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  z-index: var(--notifications-layer);
+}
+
 .snackbar {
-  background-color: #000000;
-  color: #ffffff;
+  background-color: var(--snackbar-background-color);
   padding: 10px;
-  border-radius: 5px;
+  padding: 10px;
+  animation: snackbarAnimation 4s;
+  opacity: 0;
+  box-shadow: 0 2px 8px var(--snackbar-shadow-color);
+}
+
+.snackbar_error {
+  color: var(--error-color);
+}
+
+.snackbar_success {
+  color: var(--success-color);
 }
 
 @media (hover: hover) {
   a:hover {
-    color: #0084ff;
+    color: var(--link-hover-color);
   }
 
   button:hover {
-    background-color: #39ff56;
+    background-color: var(--button-hover-color);
+  }
+}
+
+@keyframes snackbarAnimation {
+  0% {
+    opacity: 0;
+  }
+  20% {
+    opacity: 1;
+  }
+  80% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
   }
 }

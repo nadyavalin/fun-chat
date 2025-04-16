@@ -30,3 +30,5 @@ backButton.addEventListener("click", () => {
     formArea.classList.remove("form_hide");
   }
 });
+
+document.body.append(snackbarContainer);

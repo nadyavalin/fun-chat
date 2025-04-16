@@ -1,5 +1,4 @@
 export interface State {
-  id: string;
   login: string;
   password: string;
   authorizedUsers: UserResponse[];
@@ -31,7 +30,7 @@ export interface UserRequest {
 
 export interface UserResponse {
   login: string;
-  isLogged: boolean;
+  isLogined: boolean;
 }
 
 export interface UserLoginPayloadRequest {
@@ -52,7 +51,7 @@ export interface UserLogoutPayloadResponse {
 
 export interface ExternalUserResponse {
   login: string;
-  isLogged: boolean;
+  isLogined: boolean;
 }
 
 export interface UserExternalPayloadResponse {
@@ -76,7 +75,7 @@ export interface SendMessageRequest {
 
 export interface Status {
   isDelivered: boolean;
-  isReaded: boolean;
+  isRead: boolean;
   isEdited: boolean;
 }
 
@@ -145,6 +144,7 @@ export interface MessageEditPayloadResponse {
   };
 }
 
+// Start
 interface Response {
   id: string;
   type: MessageType;

@@ -1,13 +1,15 @@
 import { main, footer, header, logoutButton, userName, membersList } from "../chat/chat";
-import { login, logout, activeUser, inactiveUser } from "../../api/api";
+import { activeUser, inactiveUser, login, logout } from "../../api/api";
 import { state } from "../../store/state";
 import { createElement, createSnackbar } from "../../utils/elements";
 import {
   ActivePayloadResponse,
   InactivePayloadResponse,
+  MessageType,
   SnackbarType,
   UserExternalPayloadResponse,
   UserLoginPayloadResponse,
+  UserResponse,
 } from "../../types/types";
 
 const loginPattern = /[-a-z]{2,}$/;
@@ -73,24 +75,31 @@ form.addEventListener("change", updateButtonLoginState);
 
 export function setActiveUsers(payload: ActivePayloadResponse) {
   state.authorizedUsers = payload.users;
+  updateMembersList();
 }
 
 export function setInactiveUsers(payload: InactivePayloadResponse) {
   state.unauthorizedUsers = payload.users;
+  updateMembersList();
 }
 
 export function updateMembersList() {
   membersList.textContent = "";
   const users = [...state.authorizedUsers, ...state.unauthorizedUsers];
+  const uniqueUsers = new Map<string, UserResponse>();
+
   for (const user of users) {
     if (user.login === state.login) {
       continue;
     }
+    uniqueUsers.set(user.login, user);
+  }
 
+  for (const user of uniqueUsers.values()) {
     const userItem = createElement({ tagName: "li", classNames: ["user-item"] });
     userItem.textContent = user.login;
     userItem.dataset.login = user.login;
-    if (user.isLogged) {
+    if (user.isLogined) {
       userItem.classList.add("user-item_online");
     }
     membersList.append(userItem);
@@ -99,6 +108,11 @@ export function updateMembersList() {
 
 export function userLogin(payload: UserLoginPayloadResponse) {
   const snackbarUserLogin = createSnackbar(SnackbarType.success, "Пользователь успешно авторизован");
+  const existingUser = state.authorizedUsers.find((user) => user.login === payload.user.login);
+  if (!existingUser) {
+    state.authorizedUsers.push(payload.user);
+  }
+
   state.login = payload.user.login;
   userName.textContent = `User: ${state.login}`;
   state.authorizedUsers.push(payload.user);
@@ -107,12 +121,13 @@ export function userLogin(payload: UserLoginPayloadResponse) {
   if (state.login && state.password) {
     formArea.classList.add("form_hide");
     document.body.append(header, main, footer);
+    activeUser(null);
   }
   return snackbarUserLogin;
 }
 
 export function userLogout() {
-  state.id = "";
+  inactiveUser(null);
   state.login = "";
   state.password = "";
   userName.textContent = "";
@@ -131,13 +146,13 @@ export function userLogout() {
 
 export function externalUserLogin(payload: UserExternalPayloadResponse) {
   state.authorizedUsers.push(payload.user);
-  state.unauthorizedUsers = state.unauthorizedUsers.filter((user) => user.login !== payload.user.login);
+  state.unauthorizedUsers = state.unauthorizedUsers.filter((u) => u.login !== payload.user.login);
   updateMembersList();
 }
 
 export function externalUserLogout(payload: UserExternalPayloadResponse) {
   state.unauthorizedUsers.push(payload.user);
-  state.unauthorizedUsers = state.unauthorizedUsers.filter((user) => user.login !== payload.user.login);
+  state.unauthorizedUsers = state.unauthorizedUsers.filter((u) => u.login !== payload.user.login);
   updateMembersList();
 }
 
@@ -146,9 +161,13 @@ form.addEventListener("submit", (event) => {
   state.login = inputLogin.value;
   state.password = inputPassword.value;
 
-  activeUser("");
-  inactiveUser("");
+  // activeUser("");
+  // inactiveUser("");
   login("", { user: { login: state.login, password: state.password } });
+  console.log("Sending USER_LOGIN request:", {
+    type: MessageType.USER_LOGIN,
+    payload: { user: { login: state.login, password: state.password } },
+  });
 });
 
 logoutButton.addEventListener("click", () => {
@@ -156,8 +175,8 @@ logoutButton.addEventListener("click", () => {
   formArea.classList.remove("form_hide");
 });
 
-inputLogin.dataset.pattern = loginPattern.source;
-inputPassword.dataset.pattern = passwordPattern.source;
+inputLogin.setAttribute("data-pattern", loginPattern.source);
+inputPassword.setAttribute("data-pattern", passwordPattern.source);
 
 const onBlur = (event: Event) => {
   const input = event.target as HTMLInputElement;
